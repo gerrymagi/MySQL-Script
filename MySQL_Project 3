@@ -1,0 +1,112 @@
+
+-- Combine hasil dari Data 1 & Data 2 As Data 5
+-- Combine hasil dari Data 3 & Data 4 As Data 6
+
+/* Data 1 & Data 2 */
+-- Combining
+
+CREATE TABLE combine_adssubs_rev(
+	channelID_vidTitle varchar(255),
+	channel_vidTitle_adsSubs varchar(255),	
+	channel_name_ads varchar(255),
+	vidTitle_ads varchar(255),
+	views int,
+	ads_rev double,
+	pvt_subs_rev double
+);
+
+-- Cara 1 - Berhasil
+INSERT INTO
+	combine_adssubs_rev
+SELECT
+	ads.channelID_vidTitle,	
+	ads.channel_vidTitle_adsSubs,
+	ads.`CDN` AS channel_name_ads,
+	ads.`VT` AS vidTitle_ads,
+	ads.`OW` AS views,
+	ads.`PR` AS ads_rev,
+	COALESCE(pvt_subs.subs_rev, 0) AS pvt_subs_rev
+FROM
+	ads
+LEFT JOIN pvt_subs
+ON ads.channel_vidTitle_adsSubs = pvt_subs.channel_vidTitle_adsSubs_pvt;
+
+
+ALTER TABLE 
+	combine_adssubs_rev
+ADD COLUMN 
+	total_rev_adsSubs_rev double;
+
+UPDATE
+	combine_adssubs_rev
+SET total_rev_adsSubs_rev = combine_adssubs_rev.ads_rev + combine_adssubs_rev.pvt_subs_rev;
+
+
+-- Cek Tabel setelah penambahan
+SELECT 
+	*
+FROM
+	combine_adssubs_rev;
+
+
+
+
+
+
+/* Data 3 & Data 4 */
+-- Combining 
+
+SELECT
+	*
+FROM
+	pvt_shortads;
+
+SELECT
+	*
+FROM
+	pvt_short_subs;
+
+
+-- LEFT JOIN
+CREATE TABLE combine_shortadssubs(
+	channelID_vidTitle_adsSubs varchar(255),
+	channel_IDs_ads varchar(255),
+	pvt_vidTitle_adsSubs varchar(255),
+	short_rev_ads double,
+	pvt_short_subs_rev double 
+);
+
+
+INSERT INTO 
+	combine_shortadssubs
+SELECT
+	pvt_shortads.channelID_vidTitle_pvt AS channelID_vidTitle_adsSubs,
+	pvt_shortads.channel_IDs AS channel_IDs_ads,	
+	pvt_shortads.vid_title_short_pvt AS pvt_vidTitle_adsSubs,
+	COALESCE(pvt_shortads.pvt_short_rev, 0) AS short_rev_ads,
+	COALESCE(pvt_short_subs.pvt_short_subs_rev, 0) AS pvt_short_subs_rev
+FROM
+	pvt_shortads
+LEFT JOIN pvt_short_subs
+ON pvt_shortads.channelID_vidTitle_pvt = pvt_short_subs.channelID_vidTitle;
+
+
+SELECT
+	*
+FROM
+	combine_shortadssubs;
+
+
+ALTER TABLE 
+	combine_shortadssubs
+ADD pvt_short_adsSubs_rev double;
+
+UPDATE
+	combine_shortadssubs 
+SET pvt_short_adsSubs_rev = short_rev_ads + pvt_short_subs_rev;
+
+SELECT
+	*
+FROM
+	combine_shortadssubs;
+
