@@ -1,0 +1,50 @@
+
+-- Combine Data 5 & Data 6
+
+CREATE TABLE combine_total(
+	channelID_vidTitle_adsSubs varchar(255),
+	channelName_vidTitle_adsSubs varchar(255),	
+	channel_name_ads varchar(255),
+	vidTitle_ads varchar(255),
+	views int,
+	ads_rev double,
+	subscriber_rev double,
+	total_adsSubs_rev double,
+	total_short_adsSubs_rev double
+);
+
+
+INSERT INTO
+	combine_total
+SELECT
+	combine_adssubs_rev.channelID_vidTitle,
+	combine_adssubs_rev.channel_vidTitle_adsSubs,
+	combine_adssubs_rev.channel_name_ads,
+	combine_adssubs_rev.vidTitle_ads,
+	combine_adssubs_rev.views,
+	combine_adssubs_rev.ads_rev,
+	combine_adssubs_rev.pvt_subs_rev,
+	COALESCE(combine_adssubs_rev.total_rev_adsSubs_rev, 0),
+	COALESCE(combine_shortadssubs.pvt_short_adsSubs_rev, 0)
+FROM
+	combine_adssubs_rev
+LEFT JOIN
+	combine_shortadssubs
+ON combine_adssubs_rev.channelID_vidTitle = combine_shortadssubs.channelID_vidTitle_adsSubs;
+
+
+ALTER TABLE 
+	combine_total
+ADD
+	total_rev_jun24 double;
+
+UPDATE
+	combine_total
+SET total_rev_jun24 = combine_total.total_adsSubs_rev + combine_total.total_short_adsSubs_rev;
+
+SELECT
+	*
+FROM
+	combine_total;
+
+
