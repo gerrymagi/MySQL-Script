@@ -1,0 +1,29 @@
+
+MySQL Script
+-- Query preparasi dataset
+
+USE yt;
+DROP TABLE IF EXISTS pvt_subs, pvt_shortads, pvt_short_subs, combine_adssubs_rev, combine_shortadssubs, combine_total;
+
+ALTER TABLE yt.ads 
+DROP COLUMN channel_vidTitle_adsSubs,
+DROP COLUMN channelID_vidTitle;
+
+ALTER TABLE yt.subs 
+DROP COLUMN channel_vidTitle_adsSubs;
+
+ALTER TABLE yt.short_ads
+DROP COLUMN channelID_vidTitle;
+
+ALTER TABLE yt.short_subs
+DROP COLUMN channelID_vidTitle;
+
+
+TRUNCATE TABLE ads; 
+TRUNCATE TABLE subs;
+TRUNCATE TABLE short_ads; 
+TRUNCATE TABLE short_subs;
+
+
+
+
