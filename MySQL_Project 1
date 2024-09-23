@@ -1,8 +1,8 @@
 
 -- Script ini bertujuan untuk mengolah 2 dataset csv, serta menggabungkannya berdasarkan key column yang dibuat
 
--- REV 1
--- Membuat KEY COLUMN 1 untuk Rev 1
+-- Data 1
+-- Membuat KEY COLUMN 1 untuk Data 1
 
 ALTER TABLE
 	ads 
@@ -13,7 +13,7 @@ UPDATE
 SET channel_vidTitle_adsSubs = concat(ads.`CDN`, " - ", ads.`VT`);
 
 
--- Membuat KEY COLUMN 2 untuk Rev 1
+-- Membuat KEY COLUMN 2 untuk Data 1
 -- channelID_vidTitle
 
 ALTER TABLE 
@@ -26,8 +26,8 @@ SET channelID_vidTitle = concat(ads.`CI`, " - ", ads.`VT`);
 
 
 
--- REV 2
--- Membuat KEY COLUMN 2 untuk Rev 2
+-- Data 2
+-- Membuat KEY COLUMN 2 untuk Data 2
 -- channel_vidTitle
 
 ALTER TABLE
