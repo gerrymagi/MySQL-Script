@@ -1,0 +1,78 @@
+
+-- Script ini bertujuan untuk mengolah 2 dataset csv, serta menggabungkannya berdasarkan key column yang dibuat
+
+-- REV 1
+-- Membuat KEY COLUMN 1 untuk Rev 1
+
+ALTER TABLE
+	ads 
+ADD COLUMN
+	channel_vidTitle_adsSubs varchar(255);
+UPDATE 
+	ads 
+SET channel_vidTitle_adsSubs = concat(ads.`CDN`, " - ", ads.`VT`);
+
+
+-- Membuat KEY COLUMN 2 untuk Rev 1
+-- channelID_vidTitle
+
+ALTER TABLE 
+	ads 
+ADD COLUMN 
+	channelID_vidTitle varchar(255);
+UPDATE
+	ads 
+SET channelID_vidTitle = concat(ads.`CI`, " - ", ads.`VT`);
+
+
+
+-- REV 2
+-- Membuat KEY COLUMN 2 untuk Rev 2
+-- channel_vidTitle
+
+ALTER TABLE
+	subs
+ADD COLUMN
+	channel_vidTitle_adsSubs varchar(255);
+
+UPDATE
+	subs
+SET channel_vidTitle_adsSubs = concat(subs.`CDN`, " - ", subs.`VT`);  
+
+
+-- Membuat PIVOT SUBS REV
+
+CREATE TABLE pvt_subs(
+	channel_vidTitle_adsSubs_pvt varchar(255),
+	channel_disName varchar(255),
+	vid_title varchar(255),
+	subs_rev double
+);
+
+
+INSERT INTO	
+	pvt_subs
+SELECT
+	subs.channel_vidTitle_adsSubs AS channel_vidTitle_adsSubs_pvt,
+	subs.`CDN` AS channel_disName,
+	subs.`VT` AS vid_title,
+	sum(subs.`PR`) AS subs_rev
+FROM
+	subs
+GROUP BY
+	vid_title,
+	channel_disName,
+	channel_vidTitle_adsSubs_pvt;
+
+
+SELECT
+	*
+FROM
+	pvt_subs;
+
+
+
+
+
+
+
