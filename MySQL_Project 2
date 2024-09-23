@@ -1,0 +1,98 @@
+
+/* Script ini bertujuan untuk mengolah, memanipulasi 2 dataset lainnya, data 3 & data 4 */
+
+-- Data 3
+-- Membuat Key Column 1, ChannelID_vidTitle
+
+ALTER TABLE
+	short_ads
+ADD COLUMN
+	channelID_vidTitle varchar(255);
+UPDATE
+	short_ads
+SET channelID_vidTitle = concat(short_ads.`CI`, " - ", short_ads.`VT`); 
+
+
+
+
+-- PIVOT Data 3
+-- Buat tabel nya dulu
+CREATE TABLE pvt_shortads(
+	channelID_vidTitle_pvt varchar(255),
+	channel_IDs varchar(255),
+	vid_title_short_pvt varchar(255),
+	pvt_short_rev double
+);
+
+-- Masukkan VALUES nya
+INSERT INTO	
+	pvt_shortads
+SELECT
+	short_ads.channelID_vidTitle  AS channelID_vidTitle_pvt,
+	short_ads.`CI` AS channel_IDs,
+	short_ads.`VT` AS vid_title_short_pvt,
+	sum(short_ads.`NP Rev (Post revshare)`) AS pvt_short_rev
+FROM
+	short_ads 
+GROUP BY
+	vid_title_short_pvt,
+	channel_IDs,
+	channelID_vidTitle_pvt;
+
+SELECT
+	*
+FROM
+	pvt_shortads;
+
+
+
+
+
+
+
+
+
+
+-- Data 4
+-- Membuat Key Column 1, ChannelID_vidTitle
+	
+ALTER TABLE
+	short_subs
+ADD COLUMN
+	channelID_vidTitle varchar(255);
+UPDATE 
+	short_subs 
+SET channelID_vidTitle = concat(short_subs.`CI`, " - ", short_subs.`VT`); 
+
+
+
+-- Data 4
+-- Buat tabelnya dahulu
+CREATE TABLE pvt_short_subs(
+	channelID_vidTitle varchar(255),
+	pvt_channel_IDs varchar(255),
+	pvt_vidTitle varchar(255),
+	pvt_short_subs_rev double
+);
+
+
+INSERT INTO 
+	pvt_short_subs
+SELECT
+	short_subs.channelID_vidTitle,
+	short_subs.`CI`,
+	short_subs.`VT`,
+	sum(short_subs.`PR`)
+FROM
+	short_subs
+GROUP BY
+	short_subs.`VT`,
+	short_subs.`CI`,
+	short_subs.channelID_vidTitle;
+
+SELECT
+	sum(pvt_short_subs.pvt_short_subs_rev) AS rev 
+FROM
+	yt.pvt_short_subs;
+
+
